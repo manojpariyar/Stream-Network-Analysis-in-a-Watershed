@@ -1,0 +1,1 @@
+var json_PourPoint_Limpiyadhura_14 = {"type":"FeatureCollection","name":"PourPoint_Limpiyadhura_14","crs":{"type":"name","properties":{"name":"urn:ogc:def:crs:OGC:1.3:CRS84"}},"features":[{"type":"Feature","properties":{"Object":"PourPoint_Limpiyadhura"},"geometry":{"type":"Point","coordinates":[80.862804893094349,30.168861773825633]}}]}

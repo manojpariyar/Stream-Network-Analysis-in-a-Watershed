@@ -1,0 +1,1117 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css"><link rel="stylesheet" href="css/L.Control.Locate.min.css">
+        <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/filter.css">
+<link rel="stylesheet" href="css/nouislider.min.css">
+        <link rel="stylesheet" href="css/leaflet-control-geocoder.Geocoder.css">
+        <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        </style>
+        <title>Stream Network Analysis in a Watershed</title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script><script src="js/L.Control.Locate.min.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/leaflet-control-geocoder.Geocoder.js"></script>
+        <script src="js/tailDT.js"></script>
+<script src="js/nouislider.min.js"></script>
+<script src="js/wNumb.js"></script>
+        <script src="data/RiverStreams_GangaBasin_1.js"></script>
+        <script src="data/AddedBoundary_Nepal_2.js"></script>
+        <script src="data/UncorrectedBoundary_Nepal_3.js"></script>
+        <script src="data/CorrectedBoundary_Nepal_4.js"></script>
+        <script src="data/WatershedBoundary_Kalapani_7.js"></script>
+        <script src="data/WatershedBoundary_Limpiyadhura_8.js"></script>
+        <script src="data/StreamNetwork_Kalapani_9.js"></script>
+        <script src="data/MajorStream_Kalapani_10.js"></script>
+        <script src="data/StreamNetwork_Limpiyadhura_11.js"></script>
+        <script src="data/MajorStream_Limpiyadhura_12.js"></script>
+        <script src="data/PourPoint_Kalapani_13.js"></script>
+        <script src="data/PourPoint_Limpiyadhura_14.js"></script>
+        <script>
+        var highlightLayer;
+        function highlightFeature(e) {
+            highlightLayer = e.target;
+
+            if (e.target.feature.geometry.type === 'LineString') {
+              highlightLayer.setStyle({
+                color: '#ffff00',
+              });
+            } else {
+              highlightLayer.setStyle({
+                fillColor: '#ffff00',
+                fillOpacity: 1
+              });
+            }
+        }
+        var map = L.map('map', {
+            zoomControl:true, maxZoom:28, minZoom:1
+        }).fitBounds([[30.14292946268438,80.5128303033015],[30.469923610226616,81.05669974664296]]);
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        L.control.locate({locateOptions: {maxZoom: 19}}).addTo(map);
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+        }
+        map.createPane('pane_OSMStandard_0');
+        map.getPane('pane_OSMStandard_0').style.zIndex = 400;
+        var layer_OSMStandard_0 = L.tileLayer('http://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            pane: 'pane_OSMStandard_0',
+            opacity: 1.0,
+            attribution: '<a href="https://www.openstreetmap.org/copyright">© OpenStreetMap contributors, CC-BY-SA</a>',
+            minZoom: 1,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 19
+        });
+        layer_OSMStandard_0;
+        map.addLayer(layer_OSMStandard_0);
+        function pop_RiverStreams_GangaBasin_1(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['osm_id'] !== null ? autolinker.link(feature.properties['osm_id'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['name'] !== null ? autolinker.link(feature.properties['name'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['type'] !== null ? autolinker.link(feature.properties['type'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['width'] !== null ? autolinker.link(feature.properties['width'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_RiverStreams_GangaBasin_1_0() {
+            return {
+                pane: 'pane_RiverStreams_GangaBasin_1',
+                opacity: 1,
+                color: 'rgba(139,8,172,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 1.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        map.createPane('pane_RiverStreams_GangaBasin_1');
+        map.getPane('pane_RiverStreams_GangaBasin_1').style.zIndex = 401;
+        map.getPane('pane_RiverStreams_GangaBasin_1').style['mix-blend-mode'] = 'normal';
+        var layer_RiverStreams_GangaBasin_1 = new L.geoJson(json_RiverStreams_GangaBasin_1, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_RiverStreams_GangaBasin_1',
+            layerName: 'layer_RiverStreams_GangaBasin_1',
+            pane: 'pane_RiverStreams_GangaBasin_1',
+            onEachFeature: pop_RiverStreams_GangaBasin_1,
+            style: style_RiverStreams_GangaBasin_1_0,
+        });
+        bounds_group.addLayer(layer_RiverStreams_GangaBasin_1);
+        map.addLayer(layer_RiverStreams_GangaBasin_1);
+        function pop_AddedBoundary_Nepal_2(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Object</th>\
+                        <td>' + (feature.properties['Object'] !== null ? autolinker.link(feature.properties['Object'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Area (in sq.km)</th>\
+                        <td>' + (feature.properties['Area'] !== null ? autolinker.link(feature.properties['Area'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_AddedBoundary_Nepal_2_0() {
+            return {
+                pane: 'pane_AddedBoundary_Nepal_2',
+                opacity: 1,
+                color: 'rgba(69,173,20,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(69,173,20,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_AddedBoundary_Nepal_2');
+        map.getPane('pane_AddedBoundary_Nepal_2').style.zIndex = 402;
+        map.getPane('pane_AddedBoundary_Nepal_2').style['mix-blend-mode'] = 'normal';
+        var layer_AddedBoundary_Nepal_2 = new L.geoJson(json_AddedBoundary_Nepal_2, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_AddedBoundary_Nepal_2',
+            layerName: 'layer_AddedBoundary_Nepal_2',
+            pane: 'pane_AddedBoundary_Nepal_2',
+            onEachFeature: pop_AddedBoundary_Nepal_2,
+            style: style_AddedBoundary_Nepal_2_0,
+        });
+        bounds_group.addLayer(layer_AddedBoundary_Nepal_2);
+        map.addLayer(layer_AddedBoundary_Nepal_2);
+        function pop_UncorrectedBoundary_Nepal_3(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Object</th>\
+                        <td>' + (feature.properties['Object'] !== null ? autolinker.link(feature.properties['Object'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Area (in sq.km.)</th>\
+                        <td>' + (feature.properties['Area'] !== null ? autolinker.link(feature.properties['Area'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_UncorrectedBoundary_Nepal_3_0() {
+            return {
+                pane: 'pane_UncorrectedBoundary_Nepal_3',
+                opacity: 1,
+                color: 'rgba(255,17,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(229,182,54,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_UncorrectedBoundary_Nepal_3');
+        map.getPane('pane_UncorrectedBoundary_Nepal_3').style.zIndex = 403;
+        map.getPane('pane_UncorrectedBoundary_Nepal_3').style['mix-blend-mode'] = 'normal';
+        var layer_UncorrectedBoundary_Nepal_3 = new L.geoJson(json_UncorrectedBoundary_Nepal_3, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_UncorrectedBoundary_Nepal_3',
+            layerName: 'layer_UncorrectedBoundary_Nepal_3',
+            pane: 'pane_UncorrectedBoundary_Nepal_3',
+            onEachFeature: pop_UncorrectedBoundary_Nepal_3,
+            style: style_UncorrectedBoundary_Nepal_3_0,
+        });
+        bounds_group.addLayer(layer_UncorrectedBoundary_Nepal_3);
+        map.addLayer(layer_UncorrectedBoundary_Nepal_3);
+        function pop_CorrectedBoundary_Nepal_4(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Object</th>\
+                        <td>' + (feature.properties['Object'] !== null ? autolinker.link(feature.properties['Object'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Area (in sq.km.)</th>\
+                        <td>' + (feature.properties['Area'] !== null ? autolinker.link(feature.properties['Area'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_CorrectedBoundary_Nepal_4_0() {
+            return {
+                pane: 'pane_CorrectedBoundary_Nepal_4',
+                opacity: 1,
+                color: 'rgba(69,173,20,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(229,182,54,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_CorrectedBoundary_Nepal_4');
+        map.getPane('pane_CorrectedBoundary_Nepal_4').style.zIndex = 404;
+        map.getPane('pane_CorrectedBoundary_Nepal_4').style['mix-blend-mode'] = 'normal';
+        var layer_CorrectedBoundary_Nepal_4 = new L.geoJson(json_CorrectedBoundary_Nepal_4, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_CorrectedBoundary_Nepal_4',
+            layerName: 'layer_CorrectedBoundary_Nepal_4',
+            pane: 'pane_CorrectedBoundary_Nepal_4',
+            onEachFeature: pop_CorrectedBoundary_Nepal_4,
+            style: style_CorrectedBoundary_Nepal_4_0,
+        });
+        bounds_group.addLayer(layer_CorrectedBoundary_Nepal_4);
+        map.addLayer(layer_CorrectedBoundary_Nepal_4);
+        map.createPane('pane_KernelDensity_Kalapani_5');
+        map.getPane('pane_KernelDensity_Kalapani_5').style.zIndex = 405;
+        var img_KernelDensity_Kalapani_5 = 'data/KernelDensity_Kalapani_5.png';
+        var img_bounds_KernelDensity_Kalapani_5 = [[30.16374496510177,80.8336921522715],[30.318433527660787,81.04632071853881]];
+        var layer_KernelDensity_Kalapani_5 = new L.imageOverlay(img_KernelDensity_Kalapani_5,
+                                              img_bounds_KernelDensity_Kalapani_5,
+                                              {pane: 'pane_KernelDensity_Kalapani_5'});
+        bounds_group.addLayer(layer_KernelDensity_Kalapani_5);
+        map.addLayer(layer_KernelDensity_Kalapani_5);
+        map.createPane('pane_KernelDensity_Limpiyadhura_6');
+        map.getPane('pane_KernelDensity_Limpiyadhura_6').style.zIndex = 406;
+        var img_KernelDensity_Limpiyadhura_6 = 'data/KernelDensity_Limpiyadhura_6.png';
+        var img_bounds_KernelDensity_Limpiyadhura_6 = [[30.142456259802596,80.52929757330217],[30.46902011033309,80.86950327879126]];
+        var layer_KernelDensity_Limpiyadhura_6 = new L.imageOverlay(img_KernelDensity_Limpiyadhura_6,
+                                              img_bounds_KernelDensity_Limpiyadhura_6,
+                                              {pane: 'pane_KernelDensity_Limpiyadhura_6'});
+        bounds_group.addLayer(layer_KernelDensity_Limpiyadhura_6);
+        map.addLayer(layer_KernelDensity_Limpiyadhura_6);
+        function pop_WatershedBoundary_Kalapani_7(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Object</th>\
+                        <td>' + (feature.properties['Object'] !== null ? autolinker.link(feature.properties['Object'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Area (in sq.km.)</th>\
+                        <td>' + (feature.properties['Area'] !== null ? autolinker.link(feature.properties['Area'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Length of streams (in km)</th>\
+                        <td>' + (feature.properties['LengthStrm'] !== null ? autolinker.link(feature.properties['LengthStrm'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Drainage Density</th>\
+                        <td>' + (feature.properties['DD'] !== null ? autolinker.link(feature.properties['DD'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Weighted-Length of streams (in km)</th>\
+                        <td>' + (feature.properties['LengthStmW'] !== null ? autolinker.link(feature.properties['LengthStmW'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Drainage Density (with weighted-length of streams)</th>\
+                        <td>' + (feature.properties['DDweighted'] !== null ? autolinker.link(feature.properties['DDweighted'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_WatershedBoundary_Kalapani_7_0() {
+            return {
+                pane: 'pane_WatershedBoundary_Kalapani_7',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(152,125,183,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_WatershedBoundary_Kalapani_7');
+        map.getPane('pane_WatershedBoundary_Kalapani_7').style.zIndex = 407;
+        map.getPane('pane_WatershedBoundary_Kalapani_7').style['mix-blend-mode'] = 'normal';
+        var layer_WatershedBoundary_Kalapani_7 = new L.geoJson(json_WatershedBoundary_Kalapani_7, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_WatershedBoundary_Kalapani_7',
+            layerName: 'layer_WatershedBoundary_Kalapani_7',
+            pane: 'pane_WatershedBoundary_Kalapani_7',
+            onEachFeature: pop_WatershedBoundary_Kalapani_7,
+            style: style_WatershedBoundary_Kalapani_7_0,
+        });
+        bounds_group.addLayer(layer_WatershedBoundary_Kalapani_7);
+        map.addLayer(layer_WatershedBoundary_Kalapani_7);
+        function pop_WatershedBoundary_Limpiyadhura_8(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Object</th>\
+                        <td>' + (feature.properties['Object'] !== null ? autolinker.link(feature.properties['Object'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Area (in sq.km.)</th>\
+                        <td>' + (feature.properties['Area'] !== null ? autolinker.link(feature.properties['Area'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Length of streams (in km)</th>\
+                        <td>' + (feature.properties['LengthStrm'] !== null ? autolinker.link(feature.properties['LengthStrm'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Drainage Density</th>\
+                        <td>' + (feature.properties['DD'] !== null ? autolinker.link(feature.properties['DD'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Weighted-Length of streams (in km)</th>\
+                        <td>' + (feature.properties['LengthStmW'] !== null ? autolinker.link(feature.properties['LengthStmW'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Drainage Density (with weighted-length of streams)</th>\
+                        <td>' + (feature.properties['DDweighted'] !== null ? autolinker.link(feature.properties['DDweighted'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_WatershedBoundary_Limpiyadhura_8_0() {
+            return {
+                pane: 'pane_WatershedBoundary_Limpiyadhura_8',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(152,125,183,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_WatershedBoundary_Limpiyadhura_8');
+        map.getPane('pane_WatershedBoundary_Limpiyadhura_8').style.zIndex = 408;
+        map.getPane('pane_WatershedBoundary_Limpiyadhura_8').style['mix-blend-mode'] = 'normal';
+        var layer_WatershedBoundary_Limpiyadhura_8 = new L.geoJson(json_WatershedBoundary_Limpiyadhura_8, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_WatershedBoundary_Limpiyadhura_8',
+            layerName: 'layer_WatershedBoundary_Limpiyadhura_8',
+            pane: 'pane_WatershedBoundary_Limpiyadhura_8',
+            onEachFeature: pop_WatershedBoundary_Limpiyadhura_8,
+            style: style_WatershedBoundary_Limpiyadhura_8_0,
+        });
+        bounds_group.addLayer(layer_WatershedBoundary_Limpiyadhura_8);
+        map.addLayer(layer_WatershedBoundary_Limpiyadhura_8);
+        function pop_StreamNetwork_Kalapani_9(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Stream Order (Strahler)</th>\
+                        <td>' + (feature.properties['grid_code'] !== null ? autolinker.link(feature.properties['grid_code'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Length (in Km)</th>\
+                        <td>' + (feature.properties['Length'] !== null ? autolinker.link(feature.properties['Length'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_StreamNetwork_Kalapani_9_0(feature) {
+            switch(String(feature.properties['grid_code'])) {
+                case '1':
+                    return {
+                pane: 'pane_StreamNetwork_Kalapani_9',
+                opacity: 1,
+                color: 'rgba(247,251,255,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 1.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case '2':
+                    return {
+                pane: 'pane_StreamNetwork_Kalapani_9',
+                opacity: 1,
+                color: 'rgba(220,233,246,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 1.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case '3':
+                    return {
+                pane: 'pane_StreamNetwork_Kalapani_9',
+                opacity: 1,
+                color: 'rgba(190,216,236,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 1.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case '4':
+                    return {
+                pane: 'pane_StreamNetwork_Kalapani_9',
+                opacity: 1,
+                color: 'rgba(143,194,222,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 1.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case '5':
+                    return {
+                pane: 'pane_StreamNetwork_Kalapani_9',
+                opacity: 1,
+                color: 'rgba(91,163,208,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 1.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case '6':
+                    return {
+                pane: 'pane_StreamNetwork_Kalapani_9',
+                opacity: 1,
+                color: 'rgba(50,130,190,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 1.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case '7':
+                    return {
+                pane: 'pane_StreamNetwork_Kalapani_9',
+                opacity: 1,
+                color: 'rgba(17,92,165,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 1.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_StreamNetwork_Kalapani_9');
+        map.getPane('pane_StreamNetwork_Kalapani_9').style.zIndex = 409;
+        map.getPane('pane_StreamNetwork_Kalapani_9').style['mix-blend-mode'] = 'normal';
+        var layer_StreamNetwork_Kalapani_9 = new L.geoJson(json_StreamNetwork_Kalapani_9, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_StreamNetwork_Kalapani_9',
+            layerName: 'layer_StreamNetwork_Kalapani_9',
+            pane: 'pane_StreamNetwork_Kalapani_9',
+            onEachFeature: pop_StreamNetwork_Kalapani_9,
+            style: style_StreamNetwork_Kalapani_9_0,
+        });
+        bounds_group.addLayer(layer_StreamNetwork_Kalapani_9);
+        map.addLayer(layer_StreamNetwork_Kalapani_9);
+        function pop_MajorStream_Kalapani_10(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Object</th>\
+                        <td>' + (feature.properties['Object'] !== null ? autolinker.link(feature.properties['Object'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Length (in km)</th>\
+                        <td>' + (feature.properties['Length'] !== null ? autolinker.link(feature.properties['Length'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_MajorStream_Kalapani_10_0() {
+            return {
+                pane: 'pane_MajorStream_Kalapani_10',
+                opacity: 1,
+                color: 'rgba(255,17,0,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 3.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        map.createPane('pane_MajorStream_Kalapani_10');
+        map.getPane('pane_MajorStream_Kalapani_10').style.zIndex = 410;
+        map.getPane('pane_MajorStream_Kalapani_10').style['mix-blend-mode'] = 'normal';
+        var layer_MajorStream_Kalapani_10 = new L.geoJson(json_MajorStream_Kalapani_10, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_MajorStream_Kalapani_10',
+            layerName: 'layer_MajorStream_Kalapani_10',
+            pane: 'pane_MajorStream_Kalapani_10',
+            onEachFeature: pop_MajorStream_Kalapani_10,
+            style: style_MajorStream_Kalapani_10_0,
+        });
+        bounds_group.addLayer(layer_MajorStream_Kalapani_10);
+        map.addLayer(layer_MajorStream_Kalapani_10);
+        function pop_StreamNetwork_Limpiyadhura_11(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Stream Order (Strahler)</th>\
+                        <td>' + (feature.properties['grid_code'] !== null ? autolinker.link(feature.properties['grid_code'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Length (in km)</th>\
+                        <td>' + (feature.properties['Length'] !== null ? autolinker.link(feature.properties['Length'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_StreamNetwork_Limpiyadhura_11_0(feature) {
+            switch(String(feature.properties['grid_code'])) {
+                case '1':
+                    return {
+                pane: 'pane_StreamNetwork_Limpiyadhura_11',
+                opacity: 1,
+                color: 'rgba(247,251,255,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 1.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case '2':
+                    return {
+                pane: 'pane_StreamNetwork_Limpiyadhura_11',
+                opacity: 1,
+                color: 'rgba(220,233,246,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 1.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case '3':
+                    return {
+                pane: 'pane_StreamNetwork_Limpiyadhura_11',
+                opacity: 1,
+                color: 'rgba(190,216,236,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 1.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case '4':
+                    return {
+                pane: 'pane_StreamNetwork_Limpiyadhura_11',
+                opacity: 1,
+                color: 'rgba(143,194,222,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 1.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case '5':
+                    return {
+                pane: 'pane_StreamNetwork_Limpiyadhura_11',
+                opacity: 1,
+                color: 'rgba(91,163,208,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 1.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case '6':
+                    return {
+                pane: 'pane_StreamNetwork_Limpiyadhura_11',
+                opacity: 1,
+                color: 'rgba(50,130,190,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 1.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case '7':
+                    return {
+                pane: 'pane_StreamNetwork_Limpiyadhura_11',
+                opacity: 1,
+                color: 'rgba(17,92,165,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 1.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_StreamNetwork_Limpiyadhura_11');
+        map.getPane('pane_StreamNetwork_Limpiyadhura_11').style.zIndex = 411;
+        map.getPane('pane_StreamNetwork_Limpiyadhura_11').style['mix-blend-mode'] = 'normal';
+        var layer_StreamNetwork_Limpiyadhura_11 = new L.geoJson(json_StreamNetwork_Limpiyadhura_11, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_StreamNetwork_Limpiyadhura_11',
+            layerName: 'layer_StreamNetwork_Limpiyadhura_11',
+            pane: 'pane_StreamNetwork_Limpiyadhura_11',
+            onEachFeature: pop_StreamNetwork_Limpiyadhura_11,
+            style: style_StreamNetwork_Limpiyadhura_11_0,
+        });
+        bounds_group.addLayer(layer_StreamNetwork_Limpiyadhura_11);
+        map.addLayer(layer_StreamNetwork_Limpiyadhura_11);
+        function pop_MajorStream_Limpiyadhura_12(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Object</th>\
+                        <td>' + (feature.properties['Object'] !== null ? autolinker.link(feature.properties['Object'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Length (in km)</th>\
+                        <td>' + (feature.properties['Length'] !== null ? autolinker.link(feature.properties['Length'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_MajorStream_Limpiyadhura_12_0() {
+            return {
+                pane: 'pane_MajorStream_Limpiyadhura_12',
+                opacity: 1,
+                color: 'rgba(69,173,20,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 3.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        map.createPane('pane_MajorStream_Limpiyadhura_12');
+        map.getPane('pane_MajorStream_Limpiyadhura_12').style.zIndex = 412;
+        map.getPane('pane_MajorStream_Limpiyadhura_12').style['mix-blend-mode'] = 'normal';
+        var layer_MajorStream_Limpiyadhura_12 = new L.geoJson(json_MajorStream_Limpiyadhura_12, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_MajorStream_Limpiyadhura_12',
+            layerName: 'layer_MajorStream_Limpiyadhura_12',
+            pane: 'pane_MajorStream_Limpiyadhura_12',
+            onEachFeature: pop_MajorStream_Limpiyadhura_12,
+            style: style_MajorStream_Limpiyadhura_12_0,
+        });
+        bounds_group.addLayer(layer_MajorStream_Limpiyadhura_12);
+        map.addLayer(layer_MajorStream_Limpiyadhura_12);
+        function pop_PourPoint_Kalapani_13(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Object</th>\
+                        <td>' + (feature.properties['Object'] !== null ? autolinker.link(feature.properties['Object'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_PourPoint_Kalapani_13_0() {
+            return {
+                pane: 'pane_PourPoint_Kalapani_13',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,17,0,1.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_PourPoint_Kalapani_13');
+        map.getPane('pane_PourPoint_Kalapani_13').style.zIndex = 413;
+        map.getPane('pane_PourPoint_Kalapani_13').style['mix-blend-mode'] = 'normal';
+        var layer_PourPoint_Kalapani_13 = new L.geoJson(json_PourPoint_Kalapani_13, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_PourPoint_Kalapani_13',
+            layerName: 'layer_PourPoint_Kalapani_13',
+            pane: 'pane_PourPoint_Kalapani_13',
+            onEachFeature: pop_PourPoint_Kalapani_13,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_PourPoint_Kalapani_13_0(feature));
+            },
+        });
+        bounds_group.addLayer(layer_PourPoint_Kalapani_13);
+        map.addLayer(layer_PourPoint_Kalapani_13);
+        function pop_PourPoint_Limpiyadhura_14(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Object</th>\
+                        <td>' + (feature.properties['Object'] !== null ? autolinker.link(feature.properties['Object'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_PourPoint_Limpiyadhura_14_0() {
+            return {
+                pane: 'pane_PourPoint_Limpiyadhura_14',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(69,173,20,1.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_PourPoint_Limpiyadhura_14');
+        map.getPane('pane_PourPoint_Limpiyadhura_14').style.zIndex = 414;
+        map.getPane('pane_PourPoint_Limpiyadhura_14').style['mix-blend-mode'] = 'normal';
+        var layer_PourPoint_Limpiyadhura_14 = new L.geoJson(json_PourPoint_Limpiyadhura_14, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_PourPoint_Limpiyadhura_14',
+            layerName: 'layer_PourPoint_Limpiyadhura_14',
+            pane: 'pane_PourPoint_Limpiyadhura_14',
+            onEachFeature: pop_PourPoint_Limpiyadhura_14,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_PourPoint_Limpiyadhura_14_0(feature));
+            },
+        });
+        bounds_group.addLayer(layer_PourPoint_Limpiyadhura_14);
+        map.addLayer(layer_PourPoint_Limpiyadhura_14);
+            var title = new L.Control();
+            title.onAdd = function (map) {
+                this._div = L.DomUtil.create('div', 'info');
+                this.update();
+                return this._div;
+            };
+            title.update = function () {
+                this._div.innerHTML = '<h2>Stream Network Analysis in a Watershed</h2>';
+            };
+            title.addTo(map);
+            var abstract = new L.Control({'position':'bottomleft'});
+            abstract.onAdd = function (map) {
+                this._div = L.DomUtil.create('div',
+                'leaflet-control abstract');
+                this._div.id = 'abstract'
+                    this._div.setAttribute("onmouseenter", "abstract.show()");
+                    this._div.setAttribute("onmouseleave", "abstract.hide()");
+                    this.hide();
+                    return this._div;
+                };
+                abstract.hide = function () {
+                    this._div.classList.remove("abstractUncollapsed");
+                    this._div.classList.add("abstract");
+                    this._div.innerHTML = 'i'
+                }
+                abstract.show = function () {
+                    this._div.classList.remove("abstract");
+                    this._div.classList.add("abstractUncollapsed");
+                    this._div.innerHTML = 'This is a map showing a comparision between two watersheds in terms of Watershed Area, Stream Networks, Length of the Longest Stream, and Drainage Density. This map determines the actual border between two countries which happens to be the river (Stream) that start from the major source point of watershed.';
+            };
+            abstract.addTo(map);
+        var osmGeocoder = new L.Control.Geocoder({
+            collapsed: true,
+            position: 'topleft',
+            text: 'Search',
+            title: 'Testing'
+        }).addTo(map);
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .className += ' fa fa-search';
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .title += 'Search for a place';
+        var baseMaps = {};
+        L.control.layers(baseMaps,{'<img src="legend/PourPoint_Limpiyadhura_14.png" /> PourPoint_Limpiyadhura': layer_PourPoint_Limpiyadhura_14,'<img src="legend/PourPoint_Kalapani_13.png" /> PourPoint_Kalapani': layer_PourPoint_Kalapani_13,'<img src="legend/MajorStream_Limpiyadhura_12.png" /> MajorStream_Limpiyadhura': layer_MajorStream_Limpiyadhura_12,'StreamNetwork_Limpiyadhura<br /><table><tr><td style="text-align: center;"><img src="legend/StreamNetwork_Limpiyadhura_11_10.png" /></td><td>1</td></tr><tr><td style="text-align: center;"><img src="legend/StreamNetwork_Limpiyadhura_11_21.png" /></td><td>2</td></tr><tr><td style="text-align: center;"><img src="legend/StreamNetwork_Limpiyadhura_11_32.png" /></td><td>3</td></tr><tr><td style="text-align: center;"><img src="legend/StreamNetwork_Limpiyadhura_11_43.png" /></td><td>4</td></tr><tr><td style="text-align: center;"><img src="legend/StreamNetwork_Limpiyadhura_11_54.png" /></td><td>5</td></tr><tr><td style="text-align: center;"><img src="legend/StreamNetwork_Limpiyadhura_11_65.png" /></td><td>6</td></tr><tr><td style="text-align: center;"><img src="legend/StreamNetwork_Limpiyadhura_11_76.png" /></td><td>7</td></tr></table>': layer_StreamNetwork_Limpiyadhura_11,'<img src="legend/MajorStream_Kalapani_10.png" /> MajorStream_Kalapani': layer_MajorStream_Kalapani_10,'StreamNetwork_Kalapani<br /><table><tr><td style="text-align: center;"><img src="legend/StreamNetwork_Kalapani_9_10.png" /></td><td>1</td></tr><tr><td style="text-align: center;"><img src="legend/StreamNetwork_Kalapani_9_21.png" /></td><td>2</td></tr><tr><td style="text-align: center;"><img src="legend/StreamNetwork_Kalapani_9_32.png" /></td><td>3</td></tr><tr><td style="text-align: center;"><img src="legend/StreamNetwork_Kalapani_9_43.png" /></td><td>4</td></tr><tr><td style="text-align: center;"><img src="legend/StreamNetwork_Kalapani_9_54.png" /></td><td>5</td></tr><tr><td style="text-align: center;"><img src="legend/StreamNetwork_Kalapani_9_65.png" /></td><td>6</td></tr><tr><td style="text-align: center;"><img src="legend/StreamNetwork_Kalapani_9_76.png" /></td><td>7</td></tr></table>': layer_StreamNetwork_Kalapani_9,'<img src="legend/WatershedBoundary_Limpiyadhura_8.png" /> WatershedBoundary_Limpiyadhura': layer_WatershedBoundary_Limpiyadhura_8,'<img src="legend/WatershedBoundary_Kalapani_7.png" /> WatershedBoundary_Kalapani': layer_WatershedBoundary_Kalapani_7,"KernelDensity_Limpiyadhura": layer_KernelDensity_Limpiyadhura_6,"KernelDensity_Kalapani": layer_KernelDensity_Kalapani_5,'<img src="legend/CorrectedBoundary_Nepal_4.png" /> CorrectedBoundary_Nepal': layer_CorrectedBoundary_Nepal_4,'<img src="legend/UncorrectedBoundary_Nepal_3.png" /> UncorrectedBoundary_Nepal': layer_UncorrectedBoundary_Nepal_3,'<img src="legend/AddedBoundary_Nepal_2.png" /> AddedBoundary_Nepal': layer_AddedBoundary_Nepal_2,'<img src="legend/RiverStreams_GangaBasin_1.png" /> RiverStreams_GangaBasin': layer_RiverStreams_GangaBasin_1,"OSM Standard": layer_OSMStandard_0,},{collapsed:false}).addTo(map);
+        setBounds();
+        var mapDiv = document.getElementById('map');
+        var row = document.createElement('div');
+        row.className="row";
+        row.id="all";
+        row.style.height = "100%";
+        var col1 = document.createElement('div');
+        col1.className="col9";
+        col1.id = "mapWindow";
+        col1.style.height = "99%";
+        col1.style.width = "80%";
+        col1.style.display = "inline-block";
+        var col2 = document.createElement('div');
+        col2.className="col3";
+        col2.id = "menu";
+        col2.style.display = "inline-block";
+        mapDiv.parentNode.insertBefore(row, mapDiv);
+        document.getElementById("all").appendChild(col1);
+        document.getElementById("all").appendChild(col2);
+        col1.appendChild(mapDiv)
+        var Filters = {"grid_code": "int"};
+        function filterFunc() {
+          map.eachLayer(function(lyr){
+          if ("options" in lyr && "dataVar" in lyr["options"]){
+            features = this[lyr["options"]["dataVar"]].features.slice(0);
+            try{
+              for (key in Filters){
+                keyS = key.replace(/[^a-zA-Z0-9_]/g, "")
+                if (Filters[key] == "str" || Filters[key] == "bool"){
+                  var selection = [];
+                  var options = document.getElementById("sel_" + keyS).options
+                  for (var i=0; i < options.length; i++) {
+                    if (options[i].selected) selection.push(options[i].value);
+                  }
+                    try{
+                      if (key in features[0].properties){
+                        for (i = features.length - 1;
+                          i >= 0; --i){
+                          if (selection.indexOf(
+                          features[i].properties[key])<0
+                          && selection.length>0) {
+                          features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                  }
+                }
+                if (Filters[key] == "int"){
+                  sliderVals =  document.getElementById(
+                    "div_" + keyS).noUiSlider.get();
+                  try{
+                    if (key in features[0].properties){
+                    for (i = features.length - 1; i >= 0; --i){
+                      if (parseInt(features[i].properties[key])
+                          < sliderVals[0]
+                          || parseInt(features[i].properties[key])
+                          > sliderVals[1]){
+                            features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                    }
+                  }
+                if (Filters[key] == "real"){
+                  sliderVals =  document.getElementById(
+                    "div_" + keyS).noUiSlider.get();
+                  try{
+                    if (key in features[0].properties){
+                    for (i = features.length - 1; i >= 0; --i){
+                      if (features[i].properties[key]
+                          < sliderVals[0]
+                          || features[i].properties[key]
+                          > sliderVals[1]){
+                            features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                    }
+                  }
+                if (Filters[key] == "date"
+                  || Filters[key] == "datetime"
+                  || Filters[key] == "time"){
+                  try{
+                    if (key in features[0].properties){
+                      HTMLkey = key.replace(/[&\/\\#,+()$~%.'":*?<>{} ]/g, '');
+                      startdate = document.getElementById("dat_" +
+                        HTMLkey + "_date1").value.replace(" ", "T");
+                      enddate = document.getElementById("dat_" +
+                        HTMLkey + "_date2").value.replace(" ", "T");
+                      for (i = features.length - 1; i >= 0; --i){
+                        if (features[i].properties[key] < startdate
+                          || features[i].properties[key] > enddate){
+                          features.splice(i,1);
+                        }
+                      }
+                    }
+                  } catch(err){
+                  }
+                }
+              }
+            } catch(err){
+            }
+          this[lyr["options"]["layerName"]].clearLayers();
+          this[lyr["options"]["layerName"]].addData(features);
+          }
+          })
+        }
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_grid_code = document.createElement("div");
+            div_grid_code.id = "div_grid_code";
+            div_grid_code.className = "slider";
+            document.getElementById("menu").appendChild(div_grid_code);
+            var lab_grid_code = document.createElement('div');
+            lab_grid_code.innerHTML  = 'grid_code: <span id="val_grid_code"></span>';
+            lab_grid_code.className = 'filterlabel';
+            document.getElementById("menu").appendChild(lab_grid_code);
+            var reset_grid_code = document.createElement('div');
+            reset_grid_code.innerHTML = 'clear filter';
+            reset_grid_code.className = 'filterlabel';
+            lab_grid_code.className = 'filterlabel';
+            reset_grid_code.onclick = function() {
+                sel_grid_code.noUiSlider.reset();
+            };
+            document.getElementById("menu").appendChild(reset_grid_code);
+            var sel_grid_code = document.getElementById('div_grid_code');
+            noUiSlider.create(sel_grid_code, {
+                connect: true,
+                start: [1, 6],
+                step: 1,
+                format: wNumb({
+                    decimals: 0,
+                    }),
+                range: {
+                min: 1,
+                max: 6
+                }
+            });
+            sel_grid_code.noUiSlider.on('update', function (values) {
+            filterVals =[];
+            for (value in values){
+            filterVals.push(parseInt(value))
+            }
+            val_grid_code = document.getElementById('val_grid_code');
+            val_grid_code.innerHTML = values.join(' - ');
+                filterFunc()
+            });
+        L.ImageOverlay.include({
+            getBounds: function () {
+                return this._bounds;
+            }
+        });
+        </script>
+    </body>
+</html>

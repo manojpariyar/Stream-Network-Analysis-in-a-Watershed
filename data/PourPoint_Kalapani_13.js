@@ -1,0 +1,1 @@
+var json_PourPoint_Kalapani_13 = {"type":"FeatureCollection","name":"PourPoint_Kalapani_13","crs":{"type":"name","properties":{"name":"urn:ogc:def:crs:OGC:1.3:CRS84"}},"features":[{"type":"Feature","properties":{"Object":"PourPoint_Kalapani"},"geometry":{"type":"Point","coordinates":[80.863333340241084,30.168888882238871]}}]}
