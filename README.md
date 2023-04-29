@@ -10,5 +10,7 @@ This project uses Stahler Stream Order Method to compute the order of the stream
 The result shows that Limpiyadhura is the major watershed with major watersource for the entire basin so the longest river/streams starting from the major source in Limpiyadhura watershed represents the actual natural border between Nepal and India. This means that the area of watershed on the right of this major river/stream falls under the entity of Nepal. This adds an area of 358.15 sq.km. to the uncorrected area of Nepal (147662.64 sq.km.) resulting in an area of 148020.79 sq.km. in total.
 
 The data used for this project are obtained from following sources.
+
 https://www.diva-gis.org/
+
 https://earthexplorer.usgs.gov/
